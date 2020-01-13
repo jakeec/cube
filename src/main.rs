@@ -34,11 +34,12 @@ struct Cube {
 impl Cube {
     fn new() -> Self {
         Cube {
-            Up: Face(vec![
-                vec![Color::Black; 3],
-                vec![Color::Blue; 3],
-                vec![Color::Green; 3],
-            ]),
+            // Up: Face(vec![
+            //     vec![Color::Black; 3],
+            //     vec![Color::Blue; 3],
+            //     vec![Color::Green; 3],
+            // ]),
+            Up: Face::new(Color::White),
             Down: Face::new(Color::Yellow),
             Left: Face::new(Color::Orange),
             Right: Face::new(Color::Red),
@@ -131,7 +132,49 @@ impl Cube {
         Face(new)
     }
 
-    fn rotate_slice(
+    fn rotate_row_cw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), row: usize) {
+        let (first, second, third, fourth) = match (
+            (faces.0).0.to_owned(),
+            (faces.1).0.to_owned(),
+            (faces.2).0.to_owned(),
+            (faces.3).0.to_owned(),
+        ) {
+            (first, second, third, fourth) => (
+                first.to_owned(),
+                second.to_owned(),
+                third.to_owned(),
+                fourth.to_owned(),
+            ),
+        };
+
+        (faces.0).0[row] = second[row].to_owned();
+        (faces.1).0[row] = third[row].to_owned();
+        (faces.2).0[row] = fourth[row].to_owned();
+        (faces.3).0[row] = first[row].to_owned();
+    }
+
+    fn rotate_row_ccw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), row: usize) {
+        let (first, second, third, fourth) = match (
+            (faces.0).0.to_owned(),
+            (faces.1).0.to_owned(),
+            (faces.2).0.to_owned(),
+            (faces.3).0.to_owned(),
+        ) {
+            (first, second, third, fourth) => (
+                first.to_owned(),
+                second.to_owned(),
+                third.to_owned(),
+                fourth.to_owned(),
+            ),
+        };
+
+        (faces.0).0[row] = fourth[row].to_owned();
+        (faces.1).0[row] = first[row].to_owned();
+        (faces.2).0[row] = second[row].to_owned();
+        (faces.3).0[row] = third[row].to_owned();
+    }
+
+    fn rotate_col(
         faces: (&Face, &Face, &Face, &Face),
         row: usize,
     ) -> (Vec<Color>, Vec<Color>, Vec<Color>, Vec<Color>) {
@@ -155,34 +198,45 @@ impl Cube {
     fn up_cw(&mut self) {
         self.Up = Self::face_cw(&self.Up);
 
-        let (left, front, right, back) =
-            Self::rotate_slice((&self.Left, &self.Front, &self.Right, &self.Back), 0);
-
-        self.Back.0[0] = left;
-        self.Right.0[0] = back;
-        self.Front.0[0] = right;
-        self.Left.0[0] = front;
+        Self::rotate_row_cw(
+            (
+                &mut self.Left,
+                &mut self.Front,
+                &mut self.Right,
+                &mut self.Back,
+            ),
+            0,
+        );
     }
 
     fn up_ccw(&mut self) {
         self.Up = Self::face_ccw(&self.Up);
+        Self::rotate_row_ccw(
+            (
+                &mut self.Left,
+                &mut self.Front,
+                &mut self.Right,
+                &mut self.Back,
+            ),
+            0,
+        );
+    }
 
-        let (left, front, right, back) =
-            Self::rotate_slice((&self.Left, &self.Front, &self.Right, &self.Back), 0);
+    fn right_cw(&mut self) {
+        self.Right = Self::face_cw(&self.Right);
 
-        self.Back.0[0] = right;
-        self.Right.0[0] = front;
-        self.Front.0[0] = left;
-        self.Left.0[0] = back;
+        let (up, front, down, back) =
+            Self::rotate_col((&self.Up, &self.Front, &self.Down, &self.Back), 2);
+        self.Up.0[0] = front;
+        self.Back.0[0] = up;
+        self.Down.0[0] = back;
+        self.Front.0[0] = down;
     }
 }
 
 fn main() {
     let mut cube = Cube::new();
-    cube.print();
     cube.up_cw();
-    println!("");
-    cube.print();
     cube.up_ccw();
     println!("");
     cube.print();
