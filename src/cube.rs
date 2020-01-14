@@ -67,6 +67,7 @@ impl Cube {
     pub fn input(&mut self, instructions: &str) {
         let instructions: Vec<char> = instructions.chars().collect();
         for i in 0..instructions.len() {
+            println!("{:?}\n", self);
             let mut prime = false;
             if i + 1 > instructions.len() - 1 {
             } else {
@@ -74,13 +75,7 @@ impl Cube {
             }
             match instructions[i] {
                 'U' => self.up(prime),
-                'R' => {
-                    if prime {
-                        self.right_ccw();
-                    } else {
-                        self.right_cw();
-                    }
-                }
+                'R' => self.right(prime),
                 'L' => {
                     if prime {
                         self.left_ccw();
@@ -97,11 +92,29 @@ impl Cube {
 
     fn up(&mut self, prime: bool) {
         self.Up = Self::face_cw(&self.Up);
-        let temp = self.Front[0].clone();
-        self.Front[0] = self.Right[0].clone();
-        self.Right[0] = self.Back[0].clone();
-        self.Back[0] = self.Left[0].clone();
-        self.Left[0] = temp;
+        // let temp = self.Front[0].clone();
+        // self.Front[0] = self.Right[0].clone();
+        // self.Right[0] = self.Back[0].clone();
+        // self.Back[0] = self.Left[0].clone();
+        // self.Left[0] = temp;
+        let temp = vec![self.Front[0][0], self.Front[0][1], self.Front[0][2]];
+        for i in 0..3 {
+            self.Front[0][i] = self.Right[0][i];
+            self.Right[0][i] = self.Back[0][i];
+            self.Back[0][i] = self.Left[0][i];
+            self.Left[0][i] = temp[i];
+        }
+    }
+
+    fn right(&mut self, prime: bool) {
+        self.Right = Self::face_cw(&self.Right);
+        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+        for i in 0..3 {
+            self.Up[i][2] = self.Front[i][2];
+            self.Front[i][2] = self.Down[i][2];
+            self.Down[i][2] = self.Back[i][0];
+            self.Back[i][0] = temp[i];
+        }
     }
 
     pub fn print(&self) {
