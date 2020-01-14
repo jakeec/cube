@@ -47,6 +47,44 @@ impl Cube {
         }
     }
 
+    pub fn input(&mut self, instructions: &str) {
+        let mut prime = false;
+        let instructions: Vec<char> = instructions.chars().collect();
+        for i in 0..instructions.len() {
+            let mut prime = false;
+            if i + 1 > instructions.len() - 1 {
+            } else {
+                prime = instructions[i + 1] == '\'';
+            }
+            match instructions[i] {
+                'U' => {
+                    if prime {
+                        self.up_ccw();
+                    } else {
+                        self.up_cw();
+                    }
+                }
+                'R' => {
+                    if prime {
+                        self.right_ccw();
+                    } else {
+                        self.right_cw();
+                    }
+                }
+                'L' => {
+                    if prime {
+                        self.left_ccw();
+                    } else {
+                        self.left_cw();
+                    }
+                }
+                _ => (),
+            }
+        }
+
+        println!("{:?}\n", self);
+    }
+
     pub fn print(&self) {
         Self::print_row(&self.Void, 0);
         Self::print_row(&self.Up, 0);
@@ -59,18 +97,18 @@ impl Cube {
         print!("\n");
         Self::print_row(&self.Left, 0);
         Self::print_row(&self.Front, 0);
-        Self::print_row_reverse(&self.Right, 0);
-        Self::print_row_reverse(&self.Back, 0);
+        Self::print_row(&self.Right, 0);
+        Self::print_row(&self.Back, 0);
         print!("\n");
         Self::print_row(&self.Left, 1);
         Self::print_row(&self.Front, 1);
-        Self::print_row_reverse(&self.Right, 1);
-        Self::print_row_reverse(&self.Back, 1);
+        Self::print_row(&self.Right, 1);
+        Self::print_row(&self.Back, 1);
         print!("\n");
         Self::print_row(&self.Left, 2);
         Self::print_row(&self.Front, 2);
-        Self::print_row_reverse(&self.Right, 2);
-        Self::print_row_reverse(&self.Back, 2);
+        Self::print_row(&self.Right, 2);
+        Self::print_row(&self.Back, 2);
         print!("\n");
         Self::print_row(&self.Void, 0);
         Self::print_row(&self.Down, 2);
