@@ -3,7 +3,7 @@ use cube::Cube;
 
 fn main() {
     let mut cube = Cube::new();
-    cube.input("UR'L");
+    cube.input("U");
     println!("");
     cube.print();
 }

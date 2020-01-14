@@ -1,3 +1,5 @@
+use std::ops::{Index, IndexMut};
+
 #[derive(Clone, Copy, Debug)]
 enum Color {
     Red,
@@ -18,6 +20,26 @@ impl Face {
     }
 }
 
+impl Clone for Face {
+    fn clone(&self) -> Self {
+        Face(self.0.clone())
+    }
+}
+
+impl Index<usize> for Face {
+    type Output = Vec<Color>;
+
+    fn index(&self, row: usize) -> &Self::Output {
+        &self.0[row]
+    }
+}
+
+impl IndexMut<usize> for Face {
+    fn index_mut(&mut self, row: usize) -> &mut Vec<Color> {
+        &mut self.0[row]
+    }
+}
+
 #[derive(Debug)]
 pub struct Cube {
     Up: Face,
@@ -32,11 +54,6 @@ pub struct Cube {
 impl Cube {
     pub fn new() -> Self {
         Cube {
-            // Up: Face(vec![
-            //     vec![Color::Black; 3],
-            //     vec![Color::Blue; 3],
-            //     vec![Color::Green; 3],
-            // ]),
             Up: Face::new(Color::White),
             Down: Face::new(Color::Yellow),
             Left: Face::new(Color::Orange),
@@ -48,7 +65,6 @@ impl Cube {
     }
 
     pub fn input(&mut self, instructions: &str) {
-        let mut prime = false;
         let instructions: Vec<char> = instructions.chars().collect();
         for i in 0..instructions.len() {
             let mut prime = false;
@@ -57,13 +73,7 @@ impl Cube {
                 prime = instructions[i + 1] == '\'';
             }
             match instructions[i] {
-                'U' => {
-                    if prime {
-                        self.up_ccw();
-                    } else {
-                        self.up_cw();
-                    }
-                }
+                'U' => self.up(prime),
                 'R' => {
                     if prime {
                         self.right_ccw();
@@ -83,6 +93,15 @@ impl Cube {
         }
 
         println!("{:?}\n", self);
+    }
+
+    fn up(&mut self, prime: bool) {
+        self.Up = Self::face_cw(&self.Up);
+        let temp = self.Front[0].clone();
+        self.Front[0] = self.Right[0].clone();
+        self.Right[0] = self.Back[0].clone();
+        self.Back[0] = self.Left[0].clone();
+        self.Left[0] = temp;
     }
 
     pub fn print(&self) {
