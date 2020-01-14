@@ -50,51 +50,61 @@ impl Cube {
     }
 
     fn print(&self) {
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Up, 0);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Up, 0);
         print!("\n");
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Up, 1);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Up, 1);
         print!("\n");
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Up, 2);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Up, 2);
         print!("\n");
-        self.print_row(&self.Left, 0);
-        self.print_row(&self.Front, 0);
-        self.print_row(&self.Right, 0);
-        self.print_row(&self.Back, 0);
+        Self::print_row(&self.Left, 0);
+        Self::print_row(&self.Front, 0);
+        Self::print_row_reverse(&self.Right, 0);
+        Self::print_row_reverse(&self.Back, 0);
         print!("\n");
-        self.print_row(&self.Left, 1);
-        self.print_row(&self.Front, 1);
-        self.print_row(&self.Right, 1);
-        self.print_row(&self.Back, 1);
+        Self::print_row(&self.Left, 1);
+        Self::print_row(&self.Front, 1);
+        Self::print_row_reverse(&self.Right, 1);
+        Self::print_row_reverse(&self.Back, 1);
         print!("\n");
-        self.print_row(&self.Left, 2);
-        self.print_row(&self.Front, 2);
-        self.print_row(&self.Right, 2);
-        self.print_row(&self.Back, 2);
+        Self::print_row(&self.Left, 2);
+        Self::print_row(&self.Front, 2);
+        Self::print_row_reverse(&self.Right, 2);
+        Self::print_row_reverse(&self.Back, 2);
         print!("\n");
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Down, 0);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Down, 2);
         print!("\n");
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Down, 1);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Down, 1);
         print!("\n");
-        self.print_row(&self.Void, 0);
-        self.print_row(&self.Down, 2);
+        Self::print_row(&self.Void, 0);
+        Self::print_row(&self.Down, 0);
     }
 
-    fn print_row(&self, face: &Face, row: usize) {
+    fn print_row(face: &Face, row: usize) {
         match face {
             Face(squares) => {
                 for square in &squares[row] {
-                    self.draw_square(*square)
+                    Self::draw_square(*square)
                 }
             }
         }
     }
 
-    fn draw_square(&self, color: Color) {
+    fn print_row_reverse(face: &Face, row: usize) {
+        match face {
+            Face(squares) => {
+                for i in 0..squares.len() {
+                    Self::draw_square(squares[row][squares.len() - 1 - i])
+                }
+            }
+        }
+    }
+
+    fn draw_square(color: Color) {
         match color {
             Color::White => print!("\u{25A0} "),
             Color::Yellow => print!("\x1b[0;35m\u{25A0}\x1b[0m "),
@@ -174,12 +184,14 @@ impl Cube {
         (faces.3).0[row] = third[row].to_owned();
     }
 
-    fn rotate_col(
-        faces: (&Face, &Face, &Face, &Face),
-        row: usize,
-    ) -> (Vec<Color>, Vec<Color>, Vec<Color>, Vec<Color>) {
-        let (first, second, third, fourth) = match (faces.0, faces.1, faces.2, faces.3) {
-            (Face(first), Face(second), Face(third), Face(fourth)) => (
+    fn rotate_col_cw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), col: usize) {
+        let (first, second, third, fourth) = match (
+            (faces.0).0.to_owned(),
+            (faces.1).0.to_owned(),
+            (faces.2).0.to_owned(),
+            (faces.3).0.to_owned(),
+        ) {
+            (first, second, third, fourth) => (
                 first.to_owned(),
                 second.to_owned(),
                 third.to_owned(),
@@ -187,12 +199,12 @@ impl Cube {
             ),
         };
 
-        (
-            first[row].to_owned(),
-            second[row].to_owned(),
-            third[row].to_owned(),
-            fourth[row].to_owned(),
-        )
+        for i in 0..3 {
+            (faces.0).0[i][col] = fourth[i].to_owned()[col];
+            (faces.1).0[i][col] = first[i].to_owned()[col];
+            (faces.2).0[i][col] = second[i].to_owned()[col];
+            (faces.3).0[i][col] = third[i].to_owned()[col];
+        }
     }
 
     fn up_cw(&mut self) {
@@ -222,22 +234,92 @@ impl Cube {
         );
     }
 
+    fn down_cw(&mut self) {
+        self.Down = Self::face_cw(&self.Down);
+
+        Self::rotate_row_cw(
+            (
+                &mut self.Left,
+                &mut self.Front,
+                &mut self.Right,
+                &mut self.Back,
+            ),
+            2,
+        );
+    }
+
+    fn down_ccw(&mut self) {
+        self.Up = Self::face_ccw(&self.Up);
+        Self::rotate_row_ccw(
+            (
+                &mut self.Left,
+                &mut self.Front,
+                &mut self.Right,
+                &mut self.Back,
+            ),
+            0,
+        );
+    }
+
     fn right_cw(&mut self) {
         self.Right = Self::face_cw(&self.Right);
+        Self::rotate_col_cw(
+            (
+                &mut self.Up,
+                &mut self.Back,
+                &mut self.Down,
+                &mut self.Front,
+            ),
+            2,
+        );
+    }
 
-        let (up, front, down, back) =
-            Self::rotate_col((&self.Up, &self.Front, &self.Down, &self.Back), 2);
-        self.Up.0[0] = front;
-        self.Back.0[0] = up;
-        self.Down.0[0] = back;
-        self.Front.0[0] = down;
+    fn right_ccw(&mut self) {
+        self.Right = Self::face_cw(&self.Right);
+        Self::rotate_col_cw(
+            (
+                &mut self.Up,
+                &mut self.Front,
+                &mut self.Down,
+                &mut self.Back,
+            ),
+            2,
+        );
+    }
+
+    fn left_cw(&mut self) {
+        self.Left = Self::face_cw(&self.Left);
+        Self::rotate_col_cw(
+            (
+                &mut self.Up,
+                &mut self.Front,
+                &mut self.Down,
+                &mut self.Back,
+            ),
+            0,
+        );
+    }
+
+    fn left_ccw(&mut self) {
+        self.Left = Self::face_cw(&self.Left);
+        Self::rotate_col_cw(
+            (
+                &mut self.Up,
+                &mut self.Back,
+                &mut self.Down,
+                &mut self.Front,
+            ),
+            0,
+        );
     }
 }
 
 fn main() {
     let mut cube = Cube::new();
-    cube.up_cw();
-    cube.up_ccw();
+    // cube.up_cw();
+    // cube.up_cw();
+    cube.right_cw();
+    cube.down_cw();
     println!("");
     cube.print();
 }
