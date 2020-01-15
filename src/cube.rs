@@ -77,14 +77,14 @@ impl Cube {
                 'D' => self.down(prime),
                 'R' => self.right(prime),
                 'L' => self.left(prime),
+                'F' => self.front(prime),
                 _ => (),
             }
-            self.print();
-            println!("");
         }
     }
 
     pub fn print(&self) {
+        print!("{}[2J", 27 as char);
         Self::print_row(&self.Void, 0);
         Self::print_row(&self.Up, 0);
         print!("\n");
@@ -148,15 +148,12 @@ impl Cube {
 
     fn rotate_layer(f1: &mut Face, f2: &mut Face, f3: &mut Face, f4: &mut Face, layer: usize) {
         let temp = vec![f1[layer][0], f1[layer][1], f1[layer][2]];
-        // println!("{:?}", f2);
-        // println!("{:?}", f3);
         for i in 0..3 {
             f1[layer][i] = f2[layer][i];
             f2[layer][i] = f3[layer][i];
             f3[layer][i] = f4[layer][i];
             f4[layer][i] = temp[i];
         }
-        // println!("{:?}", f2);
     }
 
     fn up(&mut self, prime: bool) {
@@ -212,11 +209,9 @@ impl Cube {
     fn left(&mut self, prime: bool) {
         match prime {
             true => {
-                println!("L'");
                 self.Left = Self::face_ccw(&self.Left);
                 let temp = vec![self.Up[0][0], self.Up[1][0], self.Up[2][0]];
                 for i in 0..3 {
-                    println!("{}", 2 - i);
                     self.Up[i][0] = self.Front[i][0];
                     self.Front[i][0] = self.Down[i][0];
                     self.Down[i][0] = self.Back[2 - i][2];
@@ -256,6 +251,31 @@ impl Cube {
                     self.Front[i][2] = self.Down[i][2];
                     self.Down[i][2] = self.Back[2 - i][0];
                     self.Back[2 - i][0] = temp[i];
+                }
+            }
+        }
+    }
+
+    fn front(&mut self, prime: bool) {
+        match prime {
+            true => {
+                self.Front = Self::face_ccw(&self.Front);
+                let temp = vec![self.Up[2][0], self.Up[2][1], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[2][i] = self.Right[i][0];
+                    self.Right[i][0] = self.Down[0][2 - i];
+                    self.Down[0][2 - i] = self.Left[2 - i][2];
+                    self.Left[2 - i][2] = temp[i];
+                }
+            }
+            false => {
+                self.Front = Self::face_cw(&self.Front);
+                let temp = vec![self.Up[2][0], self.Up[2][1], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[2][2 - i] = self.Left[i][2];
+                    self.Left[i][2] = self.Down[0][i];
+                    self.Down[0][i] = self.Right[2 - i][0];
+                    self.Right[2 - i][0] = temp[2 - i];
                 }
             }
         }
