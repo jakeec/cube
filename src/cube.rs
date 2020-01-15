@@ -40,7 +40,7 @@ impl IndexMut<usize> for Face {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cube {
     Up: Face,
     Down: Face,
@@ -67,7 +67,6 @@ impl Cube {
     pub fn input(&mut self, instructions: &str) {
         let instructions: Vec<char> = instructions.chars().collect();
         for i in 0..instructions.len() {
-            println!("{:?}\n", self);
             let mut prime = false;
             if i + 1 > instructions.len() - 1 {
             } else {
@@ -81,8 +80,6 @@ impl Cube {
                 _ => (),
             }
         }
-
-        println!("{:?}\n", self);
     }
 
     fn up(&mut self, prime: bool) {
@@ -111,8 +108,8 @@ impl Cube {
         self.Right = Self::face_cw(&self.Right);
         let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
         for i in 0..3 {
-            self.Up[i][0] = self.Back[i][2];
-            self.Back[i][2] = self.Down[i][0];
+            self.Up[i][0] = self.Back[2 - i][2];
+            self.Back[2 - i][2] = self.Down[i][0];
             self.Down[i][0] = self.Front[i][2];
             self.Front[i][0] = temp[i];
         }
@@ -124,8 +121,8 @@ impl Cube {
         for i in 0..3 {
             self.Up[i][2] = self.Front[i][2];
             self.Front[i][2] = self.Down[i][2];
-            self.Down[i][2] = self.Back[i][0];
-            self.Back[i][0] = temp[i];
+            self.Down[i][2] = self.Back[2 - i][0];
+            self.Back[2 - i][0] = temp[i];
         }
     }
 
@@ -162,6 +159,7 @@ impl Cube {
         print!("\n");
         Self::print_row(&self.Void, 0);
         Self::print_row(&self.Down, 0);
+        print!("\n");
     }
 
     fn print_row(face: &Face, row: usize) {
