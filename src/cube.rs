@@ -207,14 +207,23 @@ impl Cube {
 
     fn left(&mut self, prime: bool) {
         match prime {
-            true => {}
+            true => {
+                self.Left = Self::face_ccw(&self.Left);
+                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[i][0] = self.Front[i][0];
+                    self.Front[i][0] = self.Down[i][0];
+                    self.Down[i][0] = self.Back[2 - i][2];
+                    self.Back[2 - i][2] = temp[i];
+                }
+            }
             false => {
                 self.Left = Self::face_cw(&self.Left);
-                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                let temp = vec![self.Up[0][0], self.Up[1][0], self.Up[2][0]];
                 for i in 0..3 {
                     self.Up[i][0] = self.Back[2 - i][2];
                     self.Back[2 - i][2] = self.Down[i][0];
-                    self.Down[i][0] = self.Front[i][2];
+                    self.Down[i][0] = self.Front[i][0];
                     self.Front[i][0] = temp[i];
                 }
             }
