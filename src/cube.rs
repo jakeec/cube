@@ -105,7 +105,7 @@ impl Cube {
     }
 
     fn left(&mut self, prime: bool) {
-        self.Right = Self::face_cw(&self.Right);
+        self.Left = Self::face_cw(&self.Left);
         let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
         for i in 0..3 {
             self.Up[i][0] = self.Back[2 - i][2];
