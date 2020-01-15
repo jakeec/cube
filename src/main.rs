@@ -13,6 +13,5 @@ fn main() {
             return;
         }
         cube.input(input.trim());
-        cube.print();
     }
 }

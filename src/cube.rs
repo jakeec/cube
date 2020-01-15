@@ -71,7 +71,6 @@ impl Cube {
             if i + 1 > instructions.len() - 1 {
             } else {
                 prime = instructions[i + 1] == '\'';
-                println!("{}", prime);
             }
             match instructions[i] {
                 'U' => self.up(prime),
@@ -80,6 +79,8 @@ impl Cube {
                 'L' => self.left(prime),
                 _ => (),
             }
+            self.print();
+            println!("");
         }
     }
 
@@ -109,13 +110,13 @@ impl Cube {
         Self::print_row(&self.Back, 2);
         print!("\n");
         Self::print_row(&self.Void, 0);
-        Self::print_row(&self.Down, 2);
+        Self::print_row(&self.Down, 0);
         print!("\n");
         Self::print_row(&self.Void, 0);
         Self::print_row(&self.Down, 1);
         print!("\n");
         Self::print_row(&self.Void, 0);
-        Self::print_row(&self.Down, 0);
+        Self::print_row(&self.Down, 2);
         print!("\n");
     }
 
@@ -147,12 +148,15 @@ impl Cube {
 
     fn rotate_layer(f1: &mut Face, f2: &mut Face, f3: &mut Face, f4: &mut Face, layer: usize) {
         let temp = vec![f1[layer][0], f1[layer][1], f1[layer][2]];
+        // println!("{:?}", f2);
+        // println!("{:?}", f3);
         for i in 0..3 {
             f1[layer][i] = f2[layer][i];
             f2[layer][i] = f3[layer][i];
             f3[layer][i] = f4[layer][i];
             f4[layer][i] = temp[i];
         }
+        // println!("{:?}", f2);
     }
 
     fn up(&mut self, prime: bool) {
@@ -208,9 +212,11 @@ impl Cube {
     fn left(&mut self, prime: bool) {
         match prime {
             true => {
+                println!("L'");
                 self.Left = Self::face_ccw(&self.Left);
-                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                let temp = vec![self.Up[0][0], self.Up[1][0], self.Up[2][0]];
                 for i in 0..3 {
+                    println!("{}", 2 - i);
                     self.Up[i][0] = self.Front[i][0];
                     self.Front[i][0] = self.Down[i][0];
                     self.Down[i][0] = self.Back[2 - i][2];
@@ -236,7 +242,7 @@ impl Cube {
                 self.Right = Self::face_ccw(&self.Right);
                 let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
                 for i in 0..3 {
-                    self.Up[i][2] = self.Back[2 - i][2];
+                    self.Up[i][2] = self.Back[2 - i][0];
                     self.Back[2 - i][0] = self.Down[i][2];
                     self.Down[i][2] = self.Front[i][2];
                     self.Front[i][2] = temp[i];
