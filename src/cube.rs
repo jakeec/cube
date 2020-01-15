@@ -71,6 +71,7 @@ impl Cube {
             if i + 1 > instructions.len() - 1 {
             } else {
                 prime = instructions[i + 1] == '\'';
+                println!("{}", prime);
             }
             match instructions[i] {
                 'U' => self.up(prime),
@@ -79,50 +80,6 @@ impl Cube {
                 'L' => self.left(prime),
                 _ => (),
             }
-        }
-    }
-
-    fn up(&mut self, prime: bool) {
-        self.Up = Self::face_cw(&self.Up);
-        let temp = vec![self.Front[0][0], self.Front[0][1], self.Front[0][2]];
-        for i in 0..3 {
-            self.Front[0][i] = self.Right[0][i];
-            self.Right[0][i] = self.Back[0][i];
-            self.Back[0][i] = self.Left[0][i];
-            self.Left[0][i] = temp[i];
-        }
-    }
-
-    fn down(&mut self, prime: bool) {
-        self.Down = Self::face_cw(&self.Down);
-        let temp = vec![self.Front[2][0], self.Front[2][1], self.Front[2][2]];
-        for i in 0..3 {
-            self.Front[2][i] = self.Left[2][i];
-            self.Left[2][i] = self.Back[2][i];
-            self.Back[2][i] = self.Right[2][i];
-            self.Right[2][i] = temp[i];
-        }
-    }
-
-    fn left(&mut self, prime: bool) {
-        self.Left = Self::face_cw(&self.Left);
-        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
-        for i in 0..3 {
-            self.Up[i][0] = self.Back[2 - i][2];
-            self.Back[2 - i][2] = self.Down[i][0];
-            self.Down[i][0] = self.Front[i][2];
-            self.Front[i][0] = temp[i];
-        }
-    }
-
-    fn right(&mut self, prime: bool) {
-        self.Right = Self::face_cw(&self.Right);
-        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
-        for i in 0..3 {
-            self.Up[i][2] = self.Front[i][2];
-            self.Front[i][2] = self.Down[i][2];
-            self.Down[i][2] = self.Back[2 - i][0];
-            self.Back[2 - i][0] = temp[i];
         }
     }
 
@@ -162,6 +119,91 @@ impl Cube {
         print!("\n");
     }
 
+    fn face_cw(face: &Face) -> Face {
+        let face = match face {
+            Face(face) => face,
+        };
+        let mut new = face.clone();
+        for i in 0..face.len() {
+            for j in 0..face[i].len() {
+                new[j][face.len() - 1 - i] = face[i][j];
+            }
+        }
+        Face(new)
+    }
+
+    fn face_ccw(face: &Face) -> Face {
+        let face = match face {
+            Face(face) => face,
+        };
+        let mut new = face.clone();
+        for i in 0..face.len() {
+            for j in 0..face[i].len() {
+                new[i][j] = face[j][face[i].len() - 1 - i];
+            }
+        }
+        Face(new)
+    }
+
+    fn rotate_layer(f1: &mut Face, f2: &mut Face, f3: &mut Face, f4: &mut Face, layer: usize) {
+        let temp = vec![f1[layer][0], f1[layer][1], f1[layer][2]];
+        for i in 0..3 {
+            f1[layer][i] = f2[layer][i];
+            f2[layer][i] = f3[layer][i];
+            f3[layer][i] = f4[layer][i];
+            f4[layer][i] = temp[i];
+        }
+    }
+
+    fn up(&mut self, prime: bool) {
+        match prime {
+            true => panic!("Not implemented!"),
+            false => {
+                self.Up = Self::face_cw(&self.Up);
+                Self::rotate_layer(
+                    &mut self.Front,
+                    &mut self.Right,
+                    &mut self.Back,
+                    &mut self.Left,
+                    0,
+                );
+            }
+        }
+    }
+
+    fn down(&mut self, prime: bool) {
+        self.Down = Self::face_cw(&self.Down);
+        Self::rotate_layer(
+            &mut self.Front,
+            &mut self.Left,
+            &mut self.Back,
+            &mut self.Right,
+            2,
+        );
+    }
+
+    fn left(&mut self, prime: bool) {
+        self.Left = Self::face_cw(&self.Left);
+        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+        for i in 0..3 {
+            self.Up[i][0] = self.Back[2 - i][2];
+            self.Back[2 - i][2] = self.Down[i][0];
+            self.Down[i][0] = self.Front[i][2];
+            self.Front[i][0] = temp[i];
+        }
+    }
+
+    fn right(&mut self, prime: bool) {
+        self.Right = Self::face_cw(&self.Right);
+        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+        for i in 0..3 {
+            self.Up[i][2] = self.Front[i][2];
+            self.Front[i][2] = self.Down[i][2];
+            self.Down[i][2] = self.Back[2 - i][0];
+            self.Back[2 - i][0] = temp[i];
+        }
+    }
+
     fn print_row(face: &Face, row: usize) {
         match face {
             Face(squares) => {
@@ -192,202 +234,5 @@ impl Cube {
             Color::Blue => print!("\x1b[34;5m\u{25A0}\x1b[0m "),
             Color::Black => print!("\x1b[0;30m\u{25A0}\x1b[0m "),
         }
-    }
-
-    fn face_cw(face: &Face) -> Face {
-        let face = match face {
-            Face(face) => face,
-        };
-        let mut new = face.clone();
-        for i in 0..face.len() {
-            for j in 0..face[i].len() {
-                new[j][face.len() - 1 - i] = face[i][j];
-            }
-        }
-        Face(new)
-    }
-
-    fn face_ccw(face: &Face) -> Face {
-        let face = match face {
-            Face(face) => face,
-        };
-        let mut new = face.clone();
-        for i in 0..face.len() {
-            for j in 0..face[i].len() {
-                new[i][j] = face[j][face[i].len() - 1 - i];
-            }
-        }
-        Face(new)
-    }
-
-    fn rotate_row_cw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), row: usize) {
-        let (first, second, third, fourth) = match (
-            (faces.0).0.to_owned(),
-            (faces.1).0.to_owned(),
-            (faces.2).0.to_owned(),
-            (faces.3).0.to_owned(),
-        ) {
-            (first, second, third, fourth) => (
-                first.to_owned(),
-                second.to_owned(),
-                third.to_owned(),
-                fourth.to_owned(),
-            ),
-        };
-
-        (faces.0).0[row] = second[row].to_owned();
-        (faces.1).0[row] = third[row].to_owned();
-        (faces.2).0[row] = fourth[row].to_owned();
-        (faces.3).0[row] = first[row].to_owned();
-    }
-
-    fn rotate_row_ccw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), row: usize) {
-        let (first, second, third, fourth) = match (
-            (faces.0).0.to_owned(),
-            (faces.1).0.to_owned(),
-            (faces.2).0.to_owned(),
-            (faces.3).0.to_owned(),
-        ) {
-            (first, second, third, fourth) => (
-                first.to_owned(),
-                second.to_owned(),
-                third.to_owned(),
-                fourth.to_owned(),
-            ),
-        };
-
-        (faces.0).0[row] = fourth[row].to_owned();
-        (faces.1).0[row] = first[row].to_owned();
-        (faces.2).0[row] = second[row].to_owned();
-        (faces.3).0[row] = third[row].to_owned();
-    }
-
-    fn rotate_col_cw(faces: (&mut Face, &mut Face, &mut Face, &mut Face), col: usize) {
-        let (first, second, third, fourth) = match (
-            (faces.0).0.to_owned(),
-            (faces.1).0.to_owned(),
-            (faces.2).0.to_owned(),
-            (faces.3).0.to_owned(),
-        ) {
-            (first, second, third, fourth) => (
-                first.to_owned(),
-                second.to_owned(),
-                third.to_owned(),
-                fourth.to_owned(),
-            ),
-        };
-
-        for i in 0..3 {
-            (faces.0).0[i][col] = fourth[i].to_owned()[col];
-            (faces.1).0[i][col] = first[i].to_owned()[col];
-            (faces.2).0[i][col] = second[i].to_owned()[col];
-            (faces.3).0[i][col] = third[i].to_owned()[col];
-        }
-    }
-
-    pub fn up_cw(&mut self) {
-        self.Up = Self::face_cw(&self.Up);
-
-        Self::rotate_row_cw(
-            (
-                &mut self.Left,
-                &mut self.Front,
-                &mut self.Right,
-                &mut self.Back,
-            ),
-            0,
-        );
-    }
-
-    pub fn up_ccw(&mut self) {
-        self.Up = Self::face_ccw(&self.Up);
-        Self::rotate_row_ccw(
-            (
-                &mut self.Left,
-                &mut self.Front,
-                &mut self.Right,
-                &mut self.Back,
-            ),
-            0,
-        );
-    }
-
-    pub fn down_cw(&mut self) {
-        self.Down = Self::face_cw(&self.Down);
-
-        Self::rotate_row_cw(
-            (
-                &mut self.Left,
-                &mut self.Front,
-                &mut self.Right,
-                &mut self.Back,
-            ),
-            2,
-        );
-    }
-
-    pub fn down_ccw(&mut self) {
-        self.Up = Self::face_ccw(&self.Up);
-        Self::rotate_row_ccw(
-            (
-                &mut self.Left,
-                &mut self.Front,
-                &mut self.Right,
-                &mut self.Back,
-            ),
-            0,
-        );
-    }
-
-    pub fn right_cw(&mut self) {
-        self.Right = Self::face_cw(&self.Right);
-        Self::rotate_col_cw(
-            (
-                &mut self.Up,
-                &mut self.Back,
-                &mut self.Down,
-                &mut self.Front,
-            ),
-            2,
-        );
-    }
-
-    pub fn right_ccw(&mut self) {
-        self.Right = Self::face_cw(&self.Right);
-        Self::rotate_col_cw(
-            (
-                &mut self.Up,
-                &mut self.Front,
-                &mut self.Down,
-                &mut self.Back,
-            ),
-            2,
-        );
-    }
-
-    pub fn left_cw(&mut self) {
-        self.Left = Self::face_cw(&self.Left);
-        Self::rotate_col_cw(
-            (
-                &mut self.Up,
-                &mut self.Front,
-                &mut self.Down,
-                &mut self.Back,
-            ),
-            0,
-        );
-    }
-
-    pub fn left_ccw(&mut self) {
-        self.Left = Self::face_cw(&self.Left);
-        Self::rotate_col_cw(
-            (
-                &mut self.Up,
-                &mut self.Back,
-                &mut self.Down,
-                &mut self.Front,
-            ),
-            0,
-        );
     }
 }
