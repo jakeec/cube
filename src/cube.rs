@@ -41,6 +41,41 @@ impl IndexMut<usize> for Face {
 }
 
 #[derive(Debug, Clone)]
+pub struct Keys {
+    pub up: char,
+    pub down: char,
+    pub left: char,
+    pub right: char,
+    pub front: char,
+    pub back: char,
+    pub up_prime: char,
+    pub down_prime: char,
+    pub left_prime: char,
+    pub right_prime: char,
+    pub front_prime: char,
+    pub back_prime: char,
+}
+
+impl Keys {
+    pub fn new() -> Self {
+        Keys {
+            up: 'w',
+            down: 'e',
+            left: 'a',
+            right: 'f',
+            front: 's',
+            back: 'd',
+            up_prime: 'W',
+            down_prime: 'E',
+            left_prime: 'A',
+            right_prime: 'F',
+            front_prime: 'S',
+            back_prime: 'D',
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Cube {
     Up: Face,
     Down: Face,
@@ -49,10 +84,11 @@ pub struct Cube {
     Front: Face,
     Back: Face,
     Void: Face,
+    keys: Keys,
 }
 
 impl Cube {
-    pub fn new() -> Self {
+    pub fn new(keys: Keys) -> Self {
         Cube {
             Up: Face::new(Color::White),
             Down: Face::new(Color::Yellow),
@@ -61,6 +97,7 @@ impl Cube {
             Front: Face::new(Color::Green),
             Back: Face::new(Color::Blue),
             Void: Face::new(Color::Black),
+            keys: keys,
         }
     }
 
@@ -72,14 +109,39 @@ impl Cube {
             } else {
                 prime = instructions[i + 1] == '\'';
             }
-            match instructions[i] {
-                'U' => self.up(prime),
-                'D' => self.down(prime),
-                'R' => self.right(prime),
-                'L' => self.left(prime),
-                'F' => self.front(prime),
-                _ => (),
+            if instructions[i] == self.keys.up {
+                self.up(false);
+            } else if instructions[i] == self.keys.down {
+                self.down(false);
+            } else if instructions[i] == self.keys.left {
+                self.left(false);
+            } else if instructions[i] == self.keys.right {
+                self.right(false);
+            } else if instructions[i] == self.keys.front {
+                self.front(false);
+            } else if instructions[i] == self.keys.back {
+                // self.back(false);
+            } else if instructions[i] == self.keys.up_prime {
+                self.up(true);
+            } else if instructions[i] == self.keys.down_prime {
+                self.down(true);
+            } else if instructions[i] == self.keys.left_prime {
+                self.left(true);
+            } else if instructions[i] == self.keys.right_prime {
+                self.right(true);
+            } else if instructions[i] == self.keys.front_prime {
+                self.front(true);
+            } else if instructions[i] == self.keys.back_prime {
+                // self.back(false);
             }
+            // match instructions[i] {
+            //     'w' => self.up(prime),
+            //     'e' => self.down(prime),
+            //     'f' => self.right(prime),
+            //     'a' => self.left(prime),
+            //     's' => self.front(prime),
+            //     _ => (),
+            // }
         }
     }
 
