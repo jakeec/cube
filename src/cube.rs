@@ -157,7 +157,16 @@ impl Cube {
 
     fn up(&mut self, prime: bool) {
         match prime {
-            true => panic!("Not implemented!"),
+            true => {
+                self.Up = Self::face_ccw(&self.Up);
+                Self::rotate_layer(
+                    &mut self.Front,
+                    &mut self.Left,
+                    &mut self.Back,
+                    &mut self.Right,
+                    0,
+                );
+            }
             false => {
                 self.Up = Self::face_cw(&self.Up);
                 Self::rotate_layer(
@@ -172,35 +181,68 @@ impl Cube {
     }
 
     fn down(&mut self, prime: bool) {
-        self.Down = Self::face_cw(&self.Down);
-        Self::rotate_layer(
-            &mut self.Front,
-            &mut self.Left,
-            &mut self.Back,
-            &mut self.Right,
-            2,
-        );
+        match prime {
+            true => {
+                self.Down = Self::face_ccw(&self.Down);
+                Self::rotate_layer(
+                    &mut self.Front,
+                    &mut self.Right,
+                    &mut self.Back,
+                    &mut self.Left,
+                    2,
+                );
+            }
+            false => {
+                self.Down = Self::face_cw(&self.Down);
+                Self::rotate_layer(
+                    &mut self.Front,
+                    &mut self.Left,
+                    &mut self.Back,
+                    &mut self.Right,
+                    2,
+                );
+            }
+        }
     }
 
     fn left(&mut self, prime: bool) {
-        self.Left = Self::face_cw(&self.Left);
-        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
-        for i in 0..3 {
-            self.Up[i][0] = self.Back[2 - i][2];
-            self.Back[2 - i][2] = self.Down[i][0];
-            self.Down[i][0] = self.Front[i][2];
-            self.Front[i][0] = temp[i];
+        match prime {
+            true => {}
+            false => {
+                self.Left = Self::face_cw(&self.Left);
+                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[i][0] = self.Back[2 - i][2];
+                    self.Back[2 - i][2] = self.Down[i][0];
+                    self.Down[i][0] = self.Front[i][2];
+                    self.Front[i][0] = temp[i];
+                }
+            }
         }
     }
 
     fn right(&mut self, prime: bool) {
-        self.Right = Self::face_cw(&self.Right);
-        let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
-        for i in 0..3 {
-            self.Up[i][2] = self.Front[i][2];
-            self.Front[i][2] = self.Down[i][2];
-            self.Down[i][2] = self.Back[2 - i][0];
-            self.Back[2 - i][0] = temp[i];
+        match prime {
+            true => {
+                self.Right = Self::face_ccw(&self.Right);
+                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[i][2] = self.Back[2 - i][2];
+                    self.Back[2 - i][0] = self.Down[i][2];
+                    self.Down[i][2] = self.Front[i][2];
+                    self.Front[i][2] = temp[i];
+                }
+            }
+            false => {
+                self.Right = Self::face_cw(&self.Right);
+                let temp = vec![self.Up[0][2], self.Up[1][2], self.Up[2][2]];
+                for i in 0..3 {
+                    self.Up[i][2] = self.Front[i][2];
+                    self.Front[i][2] = self.Down[i][2];
+                    self.Down[i][2] = self.Back[2 - i][0];
+                    self.Back[2 - i][0] = temp[i];
+                }
+            }
         }
     }
 
