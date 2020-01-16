@@ -1,4 +1,5 @@
-use std::env::home_dir;
+extern crate dirs;
+use dirs::home_dir;
 use std::fs;
 use std::fs::File;
 use std::io::Write;

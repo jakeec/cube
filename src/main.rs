@@ -1,11 +1,8 @@
 mod cube;
 use cube::{Cube, Keys};
+use dirs::home_dir;
 use getch::Getch;
-use std::env::home_dir;
 use std::fs;
-use std::io;
-use std::io::{stdin, Read, Stdin, StdinLock, Stdout, Write};
-use std::path::Path;
 use std::str;
 
 fn parse_settings(settings: &str) -> Keys {
