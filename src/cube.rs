@@ -462,6 +462,9 @@ impl Cube {
         };
 
         write!(&mut stdout, "\u{25A0} ");
+        stdout
+            .set_color(ColorSpec::new().set_fg(Some(TermColor::White)))
+            .unwrap();
         // match color {
         //     Color::White => print!("\u{25A0} "),
         //     Color::Yellow => print!("\x1b[0;35m\u{25A0}\x1b[0m "),
