@@ -386,14 +386,44 @@ impl Cube {
     // }
 
     fn draw_square(color: Color) {
+        use std::io::{self, Write};
+        use termcolor::{Color as TermColor, ColorChoice, ColorSpec, StandardStream, WriteColor};
+        let mut stdout = StandardStream::stdout(ColorChoice::Always);
+
         match color {
-            Color::White => print!("\u{25A0} "),
-            Color::Yellow => print!("\x1b[0;35m\u{25A0}\x1b[0m "),
-            Color::Orange => print!("\x1b[0;33m\u{25A0}\x1b[0m "),
-            Color::Red => print!("\x1b[38;5;160m\u{25A0}\x1b[0m "),
-            Color::Green => print!("\x1b[0;32m\u{25A0}\x1b[0m "),
-            Color::Blue => print!("\x1b[34;5m\u{25A0}\x1b[0m "),
-            Color::Black => print!("\x1b[0;30m\u{25A0}\x1b[0m "),
-        }
+            Color::White => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::White)))
+                .unwrap(),
+            Color::Green => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Green)))
+                .unwrap(),
+            Color::Red => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Red)))
+                .unwrap(),
+            Color::Blue => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Blue)))
+                .unwrap(),
+            Color::Yellow => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Yellow)))
+                .unwrap(),
+            Color::Orange => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Magenta)))
+                .unwrap(),
+            Color::Black => stdout
+                .set_color(ColorSpec::new().set_fg(Some(TermColor::Black)))
+                .unwrap(),
+            _ => (),
+        };
+
+        write!(&mut stdout, "\u{25A0} ");
+        // match color {
+        //     Color::White => print!("\u{25A0} "),
+        //     Color::Yellow => print!("\x1b[0;35m\u{25A0}\x1b[0m "),
+        //     Color::Orange => print!("\x1b[0;33m\u{25A0}\x1b[0m "),
+        //     Color::Red => print!("\x1b[38;5;160m\u{25A0}\x1b[0m "),
+        //     Color::Green => print!("\x1b[0;32m\u{25A0}\x1b[0m "),
+        //     Color::Blue => print!("\x1b[34;5m\u{25A0}\x1b[0m "),
+        //     Color::Black => print!("\x1b[0;30m\u{25A0}\x1b[0m "),
+        // }
     }
 }

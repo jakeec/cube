@@ -2,7 +2,7 @@
 name = "puzzle_cube"
 description = "Simple command line puzzle cube game"
 license = "MIT"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jake Carrington <jake.ethan.carrington@gmail.com>"]
 edition = "2018"
 build = "build.rs"
@@ -10,6 +10,7 @@ build = "build.rs"
 [dependencies]
 getch = "0.2.1"
 dirs = "2.0.2"
+termcolor = "1.1.0"
 
 [build-dependencies]
 dirs = "2.0.2"
