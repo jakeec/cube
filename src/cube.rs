@@ -142,7 +142,7 @@ impl Cube {
             } else if instructions[i] == self.keys.front {
                 self.front(false);
             } else if instructions[i] == self.keys.back {
-                // self.back(false);
+                self.back(false);
             } else if instructions[i] == self.keys.up_prime {
                 self.up(true);
             } else if instructions[i] == self.keys.down_prime {
@@ -154,7 +154,7 @@ impl Cube {
             } else if instructions[i] == self.keys.front_prime {
                 self.front(true);
             } else if instructions[i] == self.keys.back_prime {
-                // self.back(false);
+                self.back(true);
             }
             // match instructions[i] {
             //     'w' => self.up(prime),
@@ -360,6 +360,31 @@ impl Cube {
                     self.left_face[i][2] = self.down_face[0][i];
                     self.down_face[0][i] = self.right_face[2 - i][0];
                     self.right_face[2 - i][0] = temp[2 - i];
+                }
+            }
+        }
+    }
+
+    fn back(&mut self, prime: bool) {
+        match prime {
+            true => {
+                self.back_face = Self::face_ccw(&self.back_face);
+                let temp = vec![self.up_face[0][0], self.up_face[0][1], self.up_face[0][2]];
+                for i in 0..3 {
+                    self.up_face[0][i] = self.left_face[i][0];
+                    self.left_face[i][0] = self.down_face[2][2 - i];
+                    self.down_face[2][2 - i] = self.right_face[i][2];
+                    self.right_face[i][2] = temp[i];
+                }
+            }
+            false => {
+                self.back_face = Self::face_cw(&self.back_face);
+                let temp = vec![self.up_face[0][0], self.up_face[0][1], self.up_face[0][2]];
+                for i in 0..3 {
+                    self.up_face[0][i] = self.right_face[i][2];
+                    self.right_face[i][2] = self.down_face[2][2 - i];
+                    self.down_face[2][2 - i] = self.left_face[i][0];
+                    self.left_face[i][0] = temp[i];
                 }
             }
         }
