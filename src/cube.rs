@@ -123,6 +123,27 @@ impl Cube {
         }
     }
 
+    pub fn string_input(&mut self, instructions: &str) {
+        let instructions: Vec<char> = instructions.chars().collect();
+        for i in 0..instructions.len() {
+            let mut prime = false;
+            if i + 1 > instructions.len() - 1 {
+            } else {
+                prime = instructions[i + 1] == '\'';
+            }
+
+            match instructions[i] {
+                'U' => self.up(prime),
+                'D' => self.down(prime),
+                'R' => self.right(prime),
+                'L' => self.left(prime),
+                'F' => self.front(prime),
+                'B' => self.back(prime),
+                _ => (),
+            }
+        }
+    }
+
     pub fn input(&mut self, instructions: &str) {
         let instructions: Vec<char> = instructions.chars().collect();
         for i in 0..instructions.len() {

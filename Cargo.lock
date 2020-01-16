@@ -164,7 +164,7 @@ dependencies = [
 
 [[package]]
 name = "puzzle_cube"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "dirs 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "getch 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
