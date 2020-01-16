@@ -1,11 +1,9 @@
 [package]
-name = "rubiks"
+name = "puzzle_cube"
 version = "0.1.0"
 authors = ["Jake Carrington <jake.ethan.carrington@gmail.com>"]
 edition = "2018"
 build = "build.rs"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 getch = "0.2.1"
