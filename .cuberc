@@ -1,0 +1,18 @@
+[ui]
+quit = p
+
+[clockwise]
+up = e
+down = d
+left = a
+right = r
+front = j
+back = u
+
+[counterclockwise]
+up = w
+down = s
+left = q
+right = f
+front =  k
+back = i

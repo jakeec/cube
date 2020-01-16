@@ -17,12 +17,15 @@ fn parse_settings(settings: &str) -> Keys {
             section = "cw";
         } else if line.contains("[counterclockwise]") {
             section = "ccw";
+        } else if line.contains("[ui]") {
+            section = "ui";
         } else {
             let s: Vec<&str> = line.split(" = ").collect();
             if s.len() < 2 {
             } else {
-                let (dir, key, sec) = (s[0], s[1].chars().next().unwrap(), section);
-                match (dir, key, sec) {
+                let (input, key, sec) = (s[0], s[1].chars().next().unwrap(), section);
+                match (input, key, sec) {
+                    ("quit", _, "ui") => keys.quit = key,
                     ("up", _, "cw") => keys.up = key,
                     ("up", _, "ccw") => keys.up_prime = key,
                     ("down", _, "cw") => keys.down = key,
@@ -45,15 +48,19 @@ fn parse_settings(settings: &str) -> Keys {
 
 fn main() {
     let home = home_dir().unwrap();
+    println!("{:?}", home);
     let dotfile = format!("{}/.cuberc", home.to_str().unwrap());
     let settings = fs::read_to_string(dotfile).unwrap();
     let keys = parse_settings(&settings);
     println!("{:?}", settings);
-    let mut cube = Cube::new(keys);
+    let mut cube = Cube::new(&keys);
     let getch = Getch::new();
     loop {
         cube.print();
         let input = getch.getch().unwrap();
+        if str::from_utf8(&[input]).unwrap().chars().next().unwrap() == keys.quit {
+            return;
+        }
         cube.input(str::from_utf8(&[input]).unwrap());
     }
     // loop {

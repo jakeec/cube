@@ -42,6 +42,7 @@ impl IndexMut<usize> for Face {
 
 #[derive(Debug, Clone)]
 pub struct Keys {
+    pub quit: char,
     pub up: char,
     pub down: char,
     pub left: char,
@@ -59,6 +60,7 @@ pub struct Keys {
 impl Keys {
     pub fn new() -> Self {
         Keys {
+            quit: 'p',
             up: 'w',
             down: 'e',
             left: 'a',
@@ -75,6 +77,26 @@ impl Keys {
     }
 }
 
+// impl Clone for Keys {
+//     fn clone(&self) -> Self {
+//         Keys {
+//             quit: self.quit,
+//             up: self.up,
+//             down: self.down,
+//             left: self.left,
+//             right: self.right,
+//             front: self.front,
+//             back: self.back,
+//             up_prime: self.up_prime,
+//             down_prime: self.down_prime,
+//             left_prime: self.left_prime,
+//             right_prime: self.right_prime,
+//             front_prime: self.front_prime,
+//             back_prime: self.back_prime,
+//         }
+//     }
+// }
+
 #[derive(Debug, Clone)]
 pub struct Cube {
     Up: Face,
@@ -88,7 +110,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(keys: Keys) -> Self {
+    pub fn new(keys: &Keys) -> Self {
         Cube {
             Up: Face::new(Color::White),
             Down: Face::new(Color::Yellow),
@@ -97,7 +119,7 @@ impl Cube {
             Front: Face::new(Color::Green),
             Back: Face::new(Color::Blue),
             Void: Face::new(Color::Black),
-            keys: keys,
+            keys: keys.clone(),
         }
     }
 
